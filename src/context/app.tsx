@@ -160,7 +160,6 @@ const reducer: Reducer<AppState, AppAction> = (state, action) => {
       const newDsss = action.payload!.dsss!;
 
       newState.displayedDSSs = newDsss;
-      console.log(newDsss);
 
       return newState;
     }
