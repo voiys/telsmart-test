@@ -1,10 +1,7 @@
-import {
-  LogResponseErrorSignature,
-  FormatModelFormatSignature,
-} from '../types';
+import { FormatModelFormatSignature } from '../types';
 
-const logResponseError: LogResponseErrorSignature = err => {
-  err.log();
+const logResponseError: (err: Error) => void = err => {
+  console.error(err);
 };
 
 const formatModelFormat: FormatModelFormatSignature = str => {

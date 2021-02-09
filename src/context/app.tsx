@@ -97,8 +97,8 @@ const reducer: Reducer<AppState, AppAction> = (state, action) => {
     case 'add-device': {
       const newDevice = action.payload!.device!;
 
-      newState.displayedDevices = state.displayedDevices.concat(newDevice);
-      newState.initialDevices = state.initialDevices.concat(newDevice);
+      newState.displayedDevices = [newDevice, ...state.displayedDevices];
+      newState.initialDevices = [newDevice, ...state.initialDevices];
 
       if (newState.searchValue !== '') {
         newState.searchValue = '';
@@ -109,14 +109,18 @@ const reducer: Reducer<AppState, AppAction> = (state, action) => {
     case 'add-dss': {
       const newDSS = action.payload!.dss!;
 
-      newState.displayedDSSs = state.displayedDSSs.concat(newDSS);
+      newState.displayedDSSs = [newDSS, ...state.displayedDSSs];
 
       return newState;
     }
     case 'update-device': {
       const newDevice = action.payload!.device!;
+      const index = state.initialDevices.findIndex(
+        device => device.id === newDevice.id
+      );
 
-      newState.initialDevices = state.initialDevices.concat(newDevice);
+      newState.displayedDevices.splice(index, 1, newDevice);
+      newState.initialDevices.splice(index, 1, newDevice);
 
       if (newState.searchValue !== '') {
         newState.searchValue = '';
@@ -126,7 +130,9 @@ const reducer: Reducer<AppState, AppAction> = (state, action) => {
     }
     case 'update-dss': {
       const newDSS = action.payload!.dss!;
-      newState.displayedDSSs = state.displayedDSSs.concat(newDSS);
+      const index = state.displayedDSSs.findIndex(dss => dss.id === newDSS.id);
+
+      newState.displayedDSSs.splice(index, 1, newDSS);
 
       return newState;
     }
@@ -267,6 +273,7 @@ const AppContextProvider: FC = ({ children }) => {
   };
 
   const updateDSS = (dssId: number, body: DSSBody) => {
+    console.log(dssId, body);
     services.updateDSS(dssId, body).then(newDSS => {
       dispatch({
         type: 'update-dss',

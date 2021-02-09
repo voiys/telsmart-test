@@ -1,4 +1,4 @@
-import { FC, FormEventHandler } from 'react';
+import { FC, FormEventHandler, useState } from 'react';
 import { Row, Form, Col } from 'react-bootstrap';
 import { useAppContext } from '../../../context';
 import { DSSBody, DSSType } from '../../../types';
@@ -10,9 +10,11 @@ interface DSSAddFormProps {
 
 const DSSAddForm: FC<DSSAddFormProps> = ({ deviceId }) => {
   const { addDSS } = useAppContext();
+  const [isSubmitting, setSubmitting] = useState(false);
 
   const handleSubmit: FormEventHandler = e => {
     e.preventDefault();
+    setSubmitting(true);
     const form = e.target as HTMLFormElement;
     const data = new FormData(form);
     const body: DSSBody = {
@@ -26,6 +28,7 @@ const DSSAddForm: FC<DSSAddFormProps> = ({ deviceId }) => {
     addDSS(body);
 
     form.reset();
+    setSubmitting(false);
   };
 
   return (
@@ -35,7 +38,12 @@ const DSSAddForm: FC<DSSAddFormProps> = ({ deviceId }) => {
       </Row>
       <Row className='d-flex justify-content-between mb-3'>
         <Col>
-          <Form.Control placeholder='Label' name='label' required />
+          <Form.Control
+            placeholder='Label'
+            name='label'
+            required
+            disabled={isSubmitting}
+          />
         </Col>
         <Col>
           <Form.Control
@@ -47,16 +55,27 @@ const DSSAddForm: FC<DSSAddFormProps> = ({ deviceId }) => {
           />
         </Col>
         <Col>
-          <Form.Control as='select' defaultValue='SPD' name='dss_type' required>
+          <Form.Control
+            as='select'
+            defaultValue='SPD'
+            name='dss_type'
+            required
+            disabled={isSubmitting}
+          >
             <option value='SPD'>SPD</option>
             <option value='BLF'>BLF</option>
           </Form.Control>
         </Col>
       </Row>
       <Row className='px-3 mb-3'>
-        <Form.Control placeholder='Value' name='value' required />
+        <Form.Control
+          placeholder='Value'
+          name='value'
+          required
+          disabled={isSubmitting}
+        />
       </Row>
-      <Button type='submit' className='d-block ml-auto'>
+      <Button type='submit' className='d-block ml-auto' disabled={isSubmitting}>
         Add new DSS
       </Button>
     </Form>

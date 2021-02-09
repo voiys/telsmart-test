@@ -1,4 +1,4 @@
-import { FC, FormEventHandler } from 'react';
+import { FC, FormEventHandler, useState } from 'react';
 import { Col, Form, Row } from 'react-bootstrap';
 import BSModal from 'react-bootstrap/Modal';
 import { useAppContext } from '../../../context';
@@ -12,19 +12,29 @@ export interface DeviceEditFormProps {
 
 const DeviceEditForm: FC<DeviceEditFormProps> = ({ device, toggleModal }) => {
   const { updateDevice, deviceModels } = useAppContext();
+  const [isSubmitting, setSubmitting] = useState(false);
 
   const editDevice: FormEventHandler = e => {
+    e.preventDefault();
+    setSubmitting(true);
     const form = e.target as HTMLFormElement;
     const data = new FormData(form);
+    const customer = parseInt(data.get('customer') as string);
+    const model = parseInt(data.get('model') as string);
+    const mac = data.get('mac') as string;
+    const description = data.get('description') as string;
     const body: DeviceBody = {
-      customer: parseInt((data.get('customer') as string) ?? device.customer),
-      description: (data.get('description') as string) ?? device.description,
-      mac: (data.get('mac') as string) ?? device.mac,
-      model: parseInt((data.get('model') as string) ?? device.model.id),
+      customer: isNaN(customer) ? device.customer : customer,
+      description:
+        description != null && description.length !== 0
+          ? description
+          : device.description,
+      mac: mac !== '' ? mac : device.mac,
+      model: isNaN(model) ? device.model.id : model,
     };
 
     updateDevice(device.id, body);
-
+    setSubmitting(false);
     toggleModal(false);
   };
 
@@ -41,6 +51,7 @@ const DeviceEditForm: FC<DeviceEditFormProps> = ({ device, toggleModal }) => {
               placeholder={device.customer.toString()}
               min='1'
               name='customer'
+              disabled={isSubmitting}
             />
           </Col>
 
@@ -49,6 +60,7 @@ const DeviceEditForm: FC<DeviceEditFormProps> = ({ device, toggleModal }) => {
               as='select'
               name='model'
               defaultValue={device.model.id}
+              disabled={isSubmitting}
             >
               {deviceModels.map(model => (
                 <option key={model.id} value={model.id}>
@@ -58,13 +70,27 @@ const DeviceEditForm: FC<DeviceEditFormProps> = ({ device, toggleModal }) => {
             </Form.Control>
           </Col>
         </Row>
-        <Form.Control placeholder={device.description} as='textarea' />
+        <Row className='mb-3 px-3'>
+          <Form.Control name='mac' placeholder={device.mac} />
+        </Row>
+        <Row className='mb-3 px-3'>
+          <Form.Control
+            placeholder={device.description}
+            as='textarea'
+            disabled={isSubmitting}
+            name='description'
+          />
+        </Row>
       </BSModal.Body>
       <BSModal.Footer>
-        <Button type='submit' variant='success'>
+        <Button type='submit' variant='success' disabled={isSubmitting}>
           Confirm
         </Button>
-        <Button onClick={() => toggleModal(false)} variant='danger'>
+        <Button
+          onClick={() => toggleModal(false)}
+          variant='danger'
+          disabled={isSubmitting}
+        >
           Cancel
         </Button>
       </BSModal.Footer>

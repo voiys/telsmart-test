@@ -57,17 +57,17 @@ type AppActionType =
 type PaginationIndex = 'first' | 'last' | number;
 type Pagination = PaginationIndex[];
 
-type AppPayload = {
-  deviceId?: number;
-  dssId?: number;
-  searchValue?: string;
-  devices?: MappedDevices;
-  deviceModels?: DeviceModels;
-  dss?: DSS;
-  dsss?: DSSs;
-  device?: MappedDevice;
-  paginationIndex?: PaginationIndex;
-};
+type AppPayload = Partial<{
+  deviceId: number;
+  dssId: number;
+  searchValue: string;
+  devices: MappedDevices;
+  deviceModels: DeviceModels;
+  dss: DSS;
+  dsss: DSSs;
+  device: MappedDevice;
+  paginationIndex: PaginationIndex;
+}>;
 
 interface AppAction {
   type: AppActionType;

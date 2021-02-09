@@ -5,10 +5,6 @@ class ResponseError extends Error {
     this.name = 'ResponseError';
     this.message = `Error contacting [${endpoint}], responded with ${statusCode}`;
   }
-
-  log() {
-    console.error(this.message);
-  }
 }
 
 export { ResponseError };

@@ -1,4 +1,4 @@
-import { FC, FormEventHandler } from 'react';
+import { FC, FormEventHandler, useState } from 'react';
 import { Col, Form, Row } from 'react-bootstrap';
 import BSModal from 'react-bootstrap/Modal';
 import { useAppContext } from '../../../context';
@@ -11,20 +11,27 @@ export interface DSSEditFormProps {
 }
 
 const DSSEditForm: FC<DSSEditFormProps> = ({ dss, toggleModal }) => {
-  const { updateDSS, deviceModels } = useAppContext();
+  const { updateDSS } = useAppContext();
+  const [isSubmitting, setSubmitting] = useState(false);
 
   const editDSS: FormEventHandler = e => {
+    e.preventDefault();
+    setSubmitting(true);
     const form = e.target as HTMLFormElement;
     const data = new FormData(form);
+    const key = parseInt(data.get('key') as string);
+    const label = data.get('label') as string;
+    const value = data.get('value') as string;
     const body: DSSBody = {
       device: dss.device,
       dss_type: (data.get('dss_type') as DSSType) ?? dss.dss_type,
-      key: parseInt(data.get('key') as string) ?? dss.key,
-      label: (data.get('label') as string) ?? dss.label,
-      value: (data.get('value') as string) ?? dss.value,
+      key: isNaN(key) ? dss.key : key,
+      label: label !== '' ? label : dss.label,
+      value: value !== '' ? value : dss.value,
     };
 
     updateDSS(dss.id, body);
+    setSubmitting(false);
 
     toggleModal(false);
   };
@@ -37,7 +44,11 @@ const DSSEditForm: FC<DSSEditFormProps> = ({ dss, toggleModal }) => {
         </Row>
         <Row className='mb-3'>
           <Col>
-            <Form.Control name='label' placeholder={dss.label} />
+            <Form.Control
+              name='label'
+              placeholder={dss.label}
+              disabled={isSubmitting}
+            />
           </Col>
           <Col>
             <Form.Control
@@ -45,6 +56,7 @@ const DSSEditForm: FC<DSSEditFormProps> = ({ dss, toggleModal }) => {
               placeholder={dss.key.toString()}
               min='1'
               name='key'
+              disabled={isSubmitting}
             />
           </Col>
 
@@ -53,22 +65,31 @@ const DSSEditForm: FC<DSSEditFormProps> = ({ dss, toggleModal }) => {
               as='select'
               name='dss_type'
               defaultValue={dss.dss_type}
+              disabled={isSubmitting}
             >
-              {deviceModels.map(model => (
-                <option key={model.id} value={model.id}>
-                  {model.name}
+              {['BLF', 'SPD'].map(type => (
+                <option key={type} value={type}>
+                  {type}
                 </option>
               ))}
             </Form.Control>
           </Col>
         </Row>
-        <Form.Control placeholder={dss.value} name='value' />
+        <Form.Control
+          placeholder={dss.value}
+          name='value'
+          disabled={isSubmitting}
+        />
       </BSModal.Body>
       <BSModal.Footer>
-        <Button type='submit' variant='success'>
+        <Button type='submit' variant='success' disabled={isSubmitting}>
           Confirm
         </Button>
-        <Button onClick={() => toggleModal(false)} variant='danger'>
+        <Button
+          onClick={() => toggleModal(false)}
+          variant='danger'
+          disabled={isSubmitting}
+        >
           Cancel
         </Button>
       </BSModal.Footer>
