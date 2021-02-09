@@ -1,9 +1,9 @@
-import { Frame, Page, Stack } from 'framer';
+import { Page, Stack } from 'framer';
 import { FC } from 'react';
 import { Spinner } from 'react-bootstrap';
 import { useAppContext } from '../../../context';
 import { Pagination as IPagination } from '../../../types';
-import { DisplayContainer } from '../../shared';
+import { DisplayContainer, DisplayErrorMessage } from '../../shared';
 import DevicePane from './DevicePane';
 import Pagination from './Pagination';
 
@@ -77,20 +77,19 @@ const DeviceDisplay: FC<DeviceDisplayProps> = () => {
           ))}
         </Page>
       );
-    } else if (displayedDevices.length === 0 && searchValue.length > 0) {
-      return (
-        <Stack width='100%' height='100%' center>
-          {' '}
-          <Frame>whateber</Frame>{' '}
-        </Stack>
-      );
-    } else {
-      return (
-        <Stack width='100%' height='100%' center>
-          <Spinner animation='border' />
-        </Stack>
-      );
     }
+    const noSearchResult =
+      displayedDevices.length === 0 && searchValue.length > 0;
+
+    return (
+      <Stack width='100%' height='100%' center>
+        {noSearchResult ? (
+          <DisplayErrorMessage message='No devices found.' />
+        ) : (
+          <Spinner animation='border' />
+        )}
+      </Stack>
+    );
   };
 
   return (
