@@ -1,6 +1,5 @@
-import { Scroll, Stack } from 'framer';
+import { Scroll } from 'framer';
 import { FC } from 'react';
-import { ListGroup } from 'react-bootstrap';
 import { useAppContext } from '../../../context';
 import { DisplayContainer } from '../../shared';
 import DSS from './DSS';
